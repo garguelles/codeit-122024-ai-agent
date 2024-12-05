@@ -6,6 +6,7 @@
     "npm:@langchain/anthropic@~0.3.8": "0.3.8_@langchain+core@0.3.20__zod@3.23.8_zod@3.23.8",
     "npm:@langchain/core@~0.3.20": "0.3.20_zod@3.23.8",
     "npm:@langchain/langgraph@~0.2.24": "0.2.24_@langchain+core@0.3.20__zod@3.23.8",
+    "npm:hono@^4.6.12": "4.6.12",
     "npm:langchain@~0.3.6": "0.3.6_@langchain+core@0.3.20__zod@3.23.8_zod@3.23.8"
   },
   "npm": {
@@ -454,6 +455,9 @@
         "minimalistic-crypto-utils"
       ]
     },
+    "hono@4.6.12": {
+      "integrity": "sha512-eHtf4kSDNw6VVrdbd5IQi16r22m3s7mWPLd7xOMhg1a/Yyb1A0qpUFq8xYMX4FMuDe1nTKeMX5rTx7Nmw+a+Ag=="
+    },
     "humanize-ms@1.2.1": {
       "integrity": "sha512-Fl70vYtsAFb/C06PTS9dZBo7ihau+Tu/DNCk/OyHhea07S+aeMWpFFkUaXRa8fI+ScZbEI8dfSxwY7gxZ9SAVQ==",
       "dependencies": [
@@ -799,6 +803,7 @@
       "npm:@langchain/anthropic@~0.3.8",
       "npm:@langchain/core@~0.3.20",
       "npm:@langchain/langgraph@~0.2.24",
+      "npm:hono@^4.6.12",
       "npm:langchain@~0.3.6"
     ]
   }

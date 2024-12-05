@@ -5,6 +5,7 @@
     "@langchain/anthropic": "npm:@langchain/anthropic@^0.3.8",
     "@langchain/core": "npm:@langchain/core@^0.3.20",
     "@langchain/langgraph": "npm:@langchain/langgraph@^0.2.24",
+    "hono": "npm:hono@^4.6.12",
     "langchain": "npm:langchain@^0.3.6"
   },
   "nodeModulesDir": "auto"
