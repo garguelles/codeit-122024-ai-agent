@@ -70,8 +70,6 @@ export default async function createWallet(
 			networkId: "base-sepolia",
 		});
 
-		console.log("WALLET!!!", newWallet);
-
 		const walletData = newWallet.export();
 		const address = await newWallet.getDefaultAddress();
 
