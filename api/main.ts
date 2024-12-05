@@ -10,7 +10,7 @@ const sockets = new Set<WebSocket>();
 // Initialize agent once for reuse
 const agentPromise = initializeAgent();
 
-app.get("/", (c) => c.json({ message: "hello world" }));
+app.get("/", (c) => c.json({ message: "hello world update" }));
 
 app.get("/ws", async (c) => {
 	if (c.req.header("upgrade") !== "websocket") {
