@@ -36,3 +36,4 @@ next-env.d.ts
 
 .env
 wallet_data.txt
+user_wallets.txt

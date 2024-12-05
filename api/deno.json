@@ -2,11 +2,13 @@
   "imports": {
     "@coinbase/cdp-agentkit-core": "npm:@coinbase/cdp-agentkit-core@^0.0.6",
     "@coinbase/cdp-langchain": "npm:@coinbase/cdp-langchain@^0.0.7",
+    "@coinbase/coinbase-sdk": "npm:@coinbase/coinbase-sdk@^0.11.2",
     "@langchain/anthropic": "npm:@langchain/anthropic@^0.3.8",
     "@langchain/core": "npm:@langchain/core@^0.3.20",
     "@langchain/langgraph": "npm:@langchain/langgraph@^0.2.24",
     "hono": "npm:hono@^4.6.12",
-    "langchain": "npm:langchain@^0.3.6"
+    "langchain": "npm:langchain@^0.3.6",
+    "zod": "npm:zod@^3.23.8"
   },
   "nodeModulesDir": "auto"
 }

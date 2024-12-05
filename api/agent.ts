@@ -1,71 +1,87 @@
+import { Coinbase } from "@coinbase/coinbase-sdk";
 import { CdpAgentkit } from "@coinbase/cdp-agentkit-core";
-import { CdpToolkit } from "@coinbase/cdp-langchain";
+import { CdpTool, CdpToolkit } from "@coinbase/cdp-langchain";
 import { MemorySaver } from "@langchain/langgraph";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatAnthropic } from "@langchain/anthropic";
 import * as fs from "node:fs";
-import { HumanMessage } from "@langchain/core/messages";
-import * as readline from "node:readline";
+import createWallet, {
+	CreateWalletInput,
+	CREATE_WALLET_PROMPT,
+} from "./wallet-tool.ts";
 
-// Configure a file to persist the agent's CDP MPC Wallet Data
+Coinbase.configure({
+	apiKeyName: Deno.env.get("CDP_API_KEY_NAME"),
+	privateKey: Deno.env.get("CDP_API_KEY_PRIVATE_KEY"),
+});
+
 const WALLET_DATA_FILE = "wallet_data.txt";
 
-/**
- * Initialize the agent with CDP Agentkit
- *
- * @returns Agent executor and config
- */
 export default async function initializeAgent() {
-	// Initialize LLM
-	const llm = new ChatAnthropic({
-		model: "claude-3-5-sonnet-latest",
-	});
+	try {
+		const llm = new ChatAnthropic({
+			model: "claude-3-5-sonnet-latest",
+		});
 
-	let walletDataStr: string | null = null;
+		let walletDataStr: string | null = null;
 
-	// Read existing wallet data if available
-	if (fs.existsSync(WALLET_DATA_FILE)) {
-		try {
-			walletDataStr = fs.readFileSync(WALLET_DATA_FILE, "utf8");
-		} catch (error) {
-			console.error("Error reading wallet data:", error);
-			// Continue without wallet data
+		if (fs.existsSync(WALLET_DATA_FILE)) {
+			try {
+				walletDataStr = fs.readFileSync(WALLET_DATA_FILE, "utf8");
+			} catch (error) {
+				console.error("Error reading wallet data:", error);
+			}
 		}
+
+		const config = {
+			cdpWalletData: walletDataStr || undefined,
+			networkId: process.env.NETWORK_ID || "base-sepolia",
+		};
+
+		const agentkit = await CdpAgentkit.configureWithWallet(config);
+
+		const cdpToolkit = new CdpToolkit(agentkit);
+		const tools = cdpToolkit.getTools();
+
+		// Add the wallet creation tool
+		const userWalletTool = new CdpTool(
+			{
+				name: "create_user_wallet",
+				description: CREATE_WALLET_PROMPT,
+				argsSchema: CreateWalletInput,
+				func: createWallet,
+			},
+			agentkit,
+		);
+		tools.push(userWalletTool);
+
+		const memory = new MemorySaver();
+		const agentConfig = {
+			configurable: { thread_id: "onchain-agent" },
+		};
+
+		const agent = createReactAgent({
+			llm,
+			tools,
+			checkpointSaver: memory,
+			messageModifier: `You are a helpful agent that can interact onchain using the Coinbase Developer Platform Agentkit.
+      You can create wallets for users using the create_user_wallet tool.
+      When a user asks to create a wallet, extract their name and ID from the request and use the tool.
+      For example, if they say "Create a wallet for Gerard with User ID: 1", use id: "1" and name: "Gerard".
+      Always confirm wallet creation and provide the wallet address to the user.
+      If a user doesn't provide an ID, ask them for one.
+      If a user already has a wallet, inform them and show their existing wallet address.
+      For blockchain operations, use the CDP tools.`,
+		});
+
+		const exportedWallet = await agentkit.exportWallet();
+		fs.writeFileSync(WALLET_DATA_FILE, exportedWallet);
+
+		return { agent, config: agentConfig };
+	} catch (error) {
+		console.error("Failed to initialize agent:", error);
+		throw error;
 	}
-
-	// Configure CDP Agentkit
-	const config = {
-		cdpWalletData: walletDataStr || undefined,
-		networkId: process.env.NETWORK_ID || "base-sepolia",
-	};
-
-	// Initialize CDP agentkit
-	const agentkit = await CdpAgentkit.configureWithWallet(config);
-
-	// Initialize CDP Agentkit Toolkit and get tools
-	const cdpToolkit = new CdpToolkit(agentkit);
-	const tools = cdpToolkit.getTools();
-
-	// Store buffered conversation history in memory
-	const memory = new MemorySaver();
-	const agentConfig = {
-		configurable: { thread_id: "onchain-agent" },
-	};
-
-	// Create React Agent using the LLM and CDP Agentkit tools
-	const agent = createReactAgent({
-		llm,
-		tools,
-		checkpointSaver: memory,
-		messageModifier:
-			"You are a helpful agent that can interact onchain using the Coinbase Developer Platform Agentkit...",
-	});
-
-	// Save wallet data
-	const exportedWallet = await agentkit.exportWallet();
-	fs.writeFileSync(WALLET_DATA_FILE, exportedWallet);
-
-	return { agent, config: agentConfig };
 }
 
 /**
