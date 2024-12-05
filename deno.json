@@ -1,0 +1,11 @@
+{
+  "imports": {
+    "@coinbase/cdp-agentkit-core": "npm:@coinbase/cdp-agentkit-core@^0.0.6",
+    "@coinbase/cdp-langchain": "npm:@coinbase/cdp-langchain@^0.0.7",
+    "@langchain/anthropic": "npm:@langchain/anthropic@^0.3.8",
+    "@langchain/core": "npm:@langchain/core@^0.3.20",
+    "@langchain/langgraph": "npm:@langchain/langgraph@^0.2.24",
+    "langchain": "npm:langchain@^0.3.6"
+  },
+  "nodeModulesDir": "auto"
+}
