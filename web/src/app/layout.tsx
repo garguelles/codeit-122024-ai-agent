@@ -33,9 +33,7 @@ export default function RootLayout({
 }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="flex items-center justify-center">
-        <OnchainProviders>{children}</OnchainProviders>
-      </body>
+      <body className="">{children}</body>
     </html>
   );
 }
